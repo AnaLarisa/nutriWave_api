@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35828.75 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NutriWave.API", "NutriWave.API\NutriWave.API.csproj", "{71B7CAFF-37FD-47FD-9CA7-3312597EA030}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{71B7CAFF-37FD-47FD-9CA7-3312597EA030}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71B7CAFF-37FD-47FD-9CA7-3312597EA030}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71B7CAFF-37FD-47FD-9CA7-3312597EA030}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71B7CAFF-37FD-47FD-9CA7-3312597EA030}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {329719D8-B2E2-469E-B0D0-C4F33805904A}
+	EndGlobalSection
+EndGlobal
