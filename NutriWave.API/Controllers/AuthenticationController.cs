@@ -5,6 +5,7 @@ using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 using System.Text;
 using NutriWave.API.Data;
+using NutriWave.API.Services;
 
 namespace NutriWave.API.Controllers;
 
@@ -12,61 +13,38 @@ namespace NutriWave.API.Controllers;
 [Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly IAuthService _authService;
+    private readonly IConfiguration _configuration;
 
-    public AuthenticationController(AppDbContext context)
+    public AuthenticationController(IAuthService authService, IConfiguration configuration)
     {
-        _context = context;
+        _authService = authService;
+        _configuration = configuration;
     }
 
     [HttpPost("CreateAccount")]
     public async Task<IActionResult> CreateAccount([FromBody] RegisterRequest request)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+        if (await _authService.UserExistsAsync(request.Email))
         {
             return BadRequest("User with this email already exists.");
         }
 
-        var user = new UserInformation
-        {
-            FirstName = request.FirstName,
-            LastName = request.LastName,
-            Email = request.Email,
-            BirthDate = request.BirthDate,
-            PasswordHash = HashPassword(request.Password),
-            MedicalConditions = null,
-            MedicalReportUrl = null
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
+        await _authService.CreateUserAsync(request);
         return Ok(new { message = "Account created successfully." });
     }
 
     [HttpPost("Login")]
     public async Task<IActionResult> LogIn([FromBody] LoginRequest request)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-        if (user == null || !VerifyPassword(request.Password, user.PasswordHash))
+        var user = await _authService.AuthenticateUserAsync(request.Email, request.Password);
+        if (user == null)
         {
             return Unauthorized(new { message = "Invalid email or password." });
         }
 
-        // Later, you can return a JWT here!
-        return Ok(new { message = "Login successful." });
+        var token = _authService.GenerateJwtToken(user);
+        return Ok(new { token });
     }
 
-    private static string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(bytes);
-    }
-
-    private static bool VerifyPassword(string password, string storedHash)
-    {
-        var hashOfInput = HashPassword(password);
-        return storedHash == hashOfInput;
-    }
 }
