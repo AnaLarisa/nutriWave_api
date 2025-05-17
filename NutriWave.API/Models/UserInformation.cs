@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace NutriWave.API.Models;
 
@@ -18,6 +19,10 @@ public class UserInformation
 
     [Required]
     public DateTime BirthDate { get; set; }
+
+    [Required, MaxLength(10)]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
+    public Sex Sex { get; set; }
 
     [MaxLength(255)]
     public required string PasswordHash { get; set; }

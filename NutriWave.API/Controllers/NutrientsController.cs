@@ -1,9 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NutriWave.API.Models.DTO;
+using NutriWave.API.Services;
 
 namespace NutriWave.API.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class NutrientsController : ControllerBase
+[Authorize]
+public class NutrientsController(INutrientIntakeService nutrientIntakeService) : ControllerBase
 {
+
+    [HttpPost("api/food-intake")]
+    public async Task<IActionResult> UpdateFoodIntake([FromBody] FoodIntakeRequest request)
+    {
+        try
+        {
+            await nutrientIntakeService.UpdateNutrientIntakeAfterFood(request);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e);
+        }
+        return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
+    }
 }
+

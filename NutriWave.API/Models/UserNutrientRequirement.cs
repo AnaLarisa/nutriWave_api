@@ -14,7 +14,7 @@ public class UserNutrientRequirement
     public int NutrientId { get; set; }
 
     [Required]
-    public int Quantity { get; set; }
+    public float Quantity { get; set; }
 
     public UserInformation User { get; set; } = null!;
     public Nutrient Nutrient { get; set; } = null!;

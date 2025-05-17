@@ -6,25 +6,22 @@ using NutriWave.API.Models;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using NutriWave.API.Helpers;
 using NutriWave.API.Models.DTO;
 
 namespace NutriWave.API.Services;
 
-public class AuthService : IAuthService
+public class AuthService(
+    AppDbContext context,
+    IConfiguration configuration,
+    INutrientRequirementService nutrientRequirementService,
+    INutrientIntakeService nutrientIntakeService)
+    : IAuthService
 {
-    private readonly AppDbContext _context;
-    private readonly IConfiguration _configuration;
-
-    public AuthService(AppDbContext context, IConfiguration configuration)
-    {
-        _context = context;
-        _configuration = configuration;
-    }
-
     public string GenerateJwtToken(UserInformation user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Secret"]);
+        var key = Encoding.ASCII.GetBytes(configuration["JwtSettings:Secret"]);
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
@@ -33,9 +30,9 @@ public class AuthService : IAuthService
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(double.Parse(_configuration["JwtSettings:ExpiryMinutes"])),
-            Issuer = _configuration["JwtSettings:Issuer"],
-            Audience = _configuration["JwtSettings:Audience"],
+            Expires = DateTime.UtcNow.AddMinutes(double.Parse(configuration["JwtSettings:ExpiryMinutes"])),
+            Issuer = configuration["JwtSettings:Issuer"],
+            Audience = configuration["JwtSettings:Audience"],
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
@@ -47,7 +44,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> UserExistsAsync(string email)
     {
-        return await _context.Users.AnyAsync(u => u.Email == email);
+        return await context.Users.AnyAsync(u => u.Email == email);
     }
 
     public async Task CreateUserAsync(RegisterRequest request)
@@ -58,22 +55,38 @@ public class AuthService : IAuthService
             LastName = request.LastName,
             Email = request.Email,
             BirthDate = request.BirthDate,
+            Sex = GetSex(request.Sex),
             PasswordHash = HashPassword(request.Password),
             MedicalConditions = null,
             MedicalReportUrl = null
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var age = CalculationsHelper.CalculateAge(user.BirthDate);
+        await nutrientRequirementService.AddUserNutrientRequirements(user.UserId, user.Sex, age);
+    }
+
+    private static Sex GetSex(string requestSex)
+    {
+        return requestSex.ToLowerInvariant() switch
+        {
+            "feminin" or "female" or "f" => Sex.Female,
+            "masculin" or "male" or "m" => Sex.Male,
+            _ => throw new ArgumentException("The sex of the user is incorrect.")
+        };
     }
 
     public async Task<UserInformation?> AuthenticateUserAsync(string email, string password)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (user == null || !VerifyPassword(password, user.PasswordHash))
         {
             return null;
         }
+
+        await nutrientIntakeService.AddNewNutrientIntakeForTodayIfNotPresent(user.UserId);
 
         return user;
     }

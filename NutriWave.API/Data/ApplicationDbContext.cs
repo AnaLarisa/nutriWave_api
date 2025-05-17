@@ -25,6 +25,8 @@ public class AppDbContext : DbContext
             entity.Property(u => u.Email).IsRequired().HasMaxLength(255);
             entity.Property(u => u.PasswordHash).IsRequired().HasMaxLength(255);
             entity.Property(u => u.MedicalReportUrl).HasMaxLength(500);
+            entity.Property(u => u.BirthDate).IsRequired();
+            entity.Property(u => u.Sex).IsRequired().HasConversion<string>();
 
             entity.HasMany(u => u.NutrientIntakes)
                   .WithOne(ni => ni.User)

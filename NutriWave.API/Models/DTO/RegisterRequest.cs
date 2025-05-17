@@ -18,4 +18,7 @@ public class RegisterRequest
 
     [Required]
     public required DateTime BirthDate { get; set; }
+
+    [Required, MaxLength(10)]
+    public string Sex { get; set; }
 }
