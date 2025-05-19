@@ -24,8 +24,11 @@ builder.Services.AddHttpClient<INutritionixClient, NutritionixClient>(client =>
     client.DefaultRequestHeaders.Add("x-app-key", EnvironmentHelper.NutritionixApiKey);
 });
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<INutrientRequirementService, NutrientRequirementService>();
 builder.Services.AddScoped<INutrientIntakeService, NutrientIntakeService>();
+builder.Services.AddScoped<IFoodLogService, FoodLogService>();
+builder.Services.AddScoped<ISportLogService, SportLogService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = Encoding.ASCII.GetBytes(jwtSettings["Secret"]);
@@ -46,7 +49,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddAuthorization();
-
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = EnvironmentHelper.RedisConnectionString;
+    options.InstanceName = "NutriWave_";
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {

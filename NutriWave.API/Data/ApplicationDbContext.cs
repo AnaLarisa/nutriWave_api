@@ -11,7 +11,8 @@ public class AppDbContext : DbContext
     public DbSet<Nutrient> Nutrients { get; set; }
     public DbSet<UserNutrientIntake> UserNutrientIntakes { get; set; }
     public DbSet<UserNutrientRequirement> UserNutrientRequirements { get; set; }
-
+    public DbSet<FoodLog> FoodLogs { get; set; }
+    public DbSet<SportLog> SportLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,6 +89,32 @@ public class AppDbContext : DbContext
                   .HasForeignKey(ni => ni.NutrientId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
+
+        modelBuilder.Entity<FoodLog>(entity =>
+        {
+            entity.HasKey(f => f.Id);
+            entity.Property(f => f.Description).IsRequired().HasMaxLength(500);
+            entity.Property(f => f.Date).IsRequired();
+
+            entity.HasOne(f => f.User)
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SportLog>(entity =>
+        {
+            entity.HasKey(s => s.Id);
+            entity.Property(s => s.Description).IsRequired().HasMaxLength(500);
+            entity.Property(s => s.Date).IsRequired();
+
+            entity.HasOne(s => s.User)
+                .WithMany()
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+
     }
 }
 

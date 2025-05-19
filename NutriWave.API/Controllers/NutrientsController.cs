@@ -12,7 +12,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService) :
 {
 
     [HttpPost("api/food-intake")]
-    public async Task<IActionResult> UpdateFoodIntake([FromBody] FoodIntakeRequest request)
+    public async Task<IActionResult> UpdateFoodIntake([FromBody] GetInfoRequest request)
     {
         try
         {
@@ -20,7 +20,21 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService) :
         }
         catch (Exception e)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, e);
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+        return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
+    }
+
+    [HttpDelete("api/food-intake")]
+    public async Task<IActionResult> RemoveFoodIntake([FromBody] GetInfoRequest request)
+    {
+        try
+        {
+            await nutrientIntakeService.RemoveFoodIntake(request);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
     }
