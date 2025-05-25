@@ -1,11 +1,11 @@
 ﻿using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 
-namespace NutriWave.API.Services;
+namespace NutriWave.API.Services.Interfaces;
 
 public interface ISportLogService
 {
-    Task AddSportLog(GetInfoRequest request);
+    Task AddSportLog(InfoRequest request);
     Task<List<SportLog>> GetSportLogs(int userId, DateTime date);
-    Task DeleteSportLogForToday(GetInfoRequest request);
+    Task DeleteSportLogForToday(InfoRequest request);
 }

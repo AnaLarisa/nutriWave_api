@@ -1,6 +1,6 @@
 ﻿namespace NutriWave.API.Models.DTO;
 
-public class GetInfoRequest
+public class InfoRequest
 {
     public required string Description { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿using NutriWave.API.Models;
 
-namespace NutriWave.API.Services;
+namespace NutriWave.API.Services.Interfaces;
 
 public interface INutrientRequirementService
 {

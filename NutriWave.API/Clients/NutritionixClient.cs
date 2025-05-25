@@ -56,8 +56,7 @@ public class NutritionixClient(HttpClient httpClient) : INutritionixClient
 
         var body = new
         {
-            query = sport,
-            timezone = TimeZoneInfo.Local.StandardName,
+            query = sport
         };
         request.Content = new StringContent(JsonSerializer.Serialize(body), Encoding.UTF8, "application/json");
 

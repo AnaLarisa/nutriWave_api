@@ -3,6 +3,7 @@ using NutriWave.API.Clients;
 using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
+using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Services;
 
@@ -32,7 +33,7 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
             .ToListAsync();
     }
 
-    public async Task UpdateNutrientIntakeAfterFood(GetInfoRequest request)
+    public async Task UpdateNutrientIntakeAfterFood(InfoRequest request)
     {
         var response = await nutritionixClient.GetFoodInfoAsync(request.Description);
         if (response == null || response.Foods.Count == 0)
@@ -66,7 +67,7 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         await context.SaveChangesAsync();
     }
 
-    public async Task RemoveFoodIntake(GetInfoRequest request)
+    public async Task RemoveFoodIntake(InfoRequest request)
     {
         var userIntakes = await GetUserIntakeForTodayToDictionaryAsync(request);
 
@@ -90,7 +91,7 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         await context.SaveChangesAsync();
     }
 
-    private async Task<Dictionary<int, UserNutrientIntake>> GetUserIntakeForTodayToDictionaryAsync(GetInfoRequest request)
+    private async Task<Dictionary<int, UserNutrientIntake>> GetUserIntakeForTodayToDictionaryAsync(InfoRequest request)
     {
         return await context.UserNutrientIntakes
             .Where(ni => ni.UserId == request.UserId && ni.Date == DateTime.Today)

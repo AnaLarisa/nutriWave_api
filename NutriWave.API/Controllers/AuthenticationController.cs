@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using NutriWave.API.Models.DTO;
-using NutriWave.API.Services;
+using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Controllers;
 

@@ -8,15 +8,15 @@ namespace NutriWave.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class NutrientsController(INutrientIntakeService nutrientIntakeService) : ControllerBase
+public class SportController(ISportIntakeService sportIntakeService) : ControllerBase
 {
 
-    [HttpPost("api/food-intake")]
+    [HttpPost("api/sport-intake")]
     public async Task<IActionResult> UpdateFoodIntake([FromBody] InfoRequest request)
     {
         try
         {
-            await nutrientIntakeService.UpdateNutrientIntakeAfterFood(request);
+            await sportIntakeService.AddSportToUser(request);
         }
         catch (Exception e)
         {
@@ -25,12 +25,12 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService) :
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
     }
 
-    [HttpDelete("api/food-intake")]
+    [HttpDelete("api/sport-intake")]
     public async Task<IActionResult> RemoveFoodIntake([FromBody] InfoRequest request)
     {
         try
         {
-            await nutrientIntakeService.RemoveFoodIntake(request);
+            await sportIntakeService.DeleteSport(request);
         }
         catch (Exception e)
         {
@@ -39,5 +39,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService) :
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
     }
 
-}
 
+
+
+}

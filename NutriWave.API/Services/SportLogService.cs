@@ -2,12 +2,13 @@
 using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
+using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Services;
 
 public class SportLogService(AppDbContext context) : ISportLogService
 {
-    public async Task AddSportLog(GetInfoRequest request)
+    public async Task AddSportLog(InfoRequest request)
     {
         var sportLog = new SportLog
         {
@@ -27,7 +28,7 @@ public class SportLogService(AppDbContext context) : ISportLogService
             .ToListAsync();
     }
 
-    public async Task DeleteSportLogForToday(GetInfoRequest request)
+    public async Task DeleteSportLogForToday(InfoRequest request)
     {
         var sportLog = await context.SportLogs
             .FirstOrDefaultAsync(s => s.Description == request.Description && s.Date.Date == DateTime.Today && s.UserId.Equals(request.UserId));

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NutriWave.API.Helpers;
 using NutriWave.API.Models.DTO;
+using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Services;
 

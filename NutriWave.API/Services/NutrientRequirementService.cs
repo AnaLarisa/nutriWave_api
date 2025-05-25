@@ -1,5 +1,6 @@
 ﻿using NutriWave.API.Data;
 using NutriWave.API.Models;
+using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Services;
 

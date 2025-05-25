@@ -3,11 +3,11 @@ using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 
-namespace NutriWave.API.Services;
+namespace NutriWave.API.Services.Interfaces;
 
 public class FoodLogService(AppDbContext context) : IFoodLogService
 {
-    public async Task AddFoodIntakeRequestLog(GetInfoRequest foodRequest)
+    public async Task AddFoodIntakeRequestLog(InfoRequest foodRequest)
     {
         var foodLog = new FoodLog
         {
@@ -27,7 +27,7 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
             .ToListAsync();
     }
 
-    public async Task DeleteFoodIntakeLogForToday(GetInfoRequest foodRequest)
+    public async Task DeleteFoodIntakeLogForToday(InfoRequest foodRequest)
     {
         var foodLog = await context.FoodLogs
             .FirstOrDefaultAsync(f =>

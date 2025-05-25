@@ -6,6 +6,7 @@ using NutriWave.API.Clients;
 using NutriWave.API.Data;
 using NutriWave.API.Helpers;
 using NutriWave.API.Services;
+using NutriWave.API.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<INutrientRequirementService, NutrientRequirementService>();
 builder.Services.AddScoped<INutrientIntakeService, NutrientIntakeService>();
+builder.Services.AddScoped<ISportIntakeService, SportIntakeService>();
 builder.Services.AddScoped<IFoodLogService, FoodLogService>();
 builder.Services.AddScoped<ISportLogService, SportLogService>();
 

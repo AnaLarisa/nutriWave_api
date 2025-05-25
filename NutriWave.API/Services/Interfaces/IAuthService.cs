@@ -1,7 +1,7 @@
 ﻿using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 
-namespace NutriWave.API.Services;
+namespace NutriWave.API.Services.Interfaces;
 
 public interface IAuthService
 {
