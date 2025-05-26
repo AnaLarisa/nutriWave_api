@@ -5,4 +5,6 @@ namespace NutriWave.API.Services.Interfaces;
 public interface INutrientRequirementService
 {
     Task AddUserNutrientRequirements(int userId, Sex sex, int age);
+
+    Task<List<UserNutrientRequirement>> GetUserNutrientRequirements(int userId);
 }

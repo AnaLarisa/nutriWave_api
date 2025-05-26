@@ -13,6 +13,8 @@ public class SportLog
     [Required]
     public required string Description { get; set; }
 
+    public float CaloriesBurned { get; set; }
+
     [Required]
     public DateTime Date { get; set; }
 

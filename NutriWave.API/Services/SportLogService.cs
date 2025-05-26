@@ -8,12 +8,13 @@ namespace NutriWave.API.Services;
 
 public class SportLogService(AppDbContext context) : ISportLogService
 {
-    public async Task AddSportLog(InfoRequest request)
+    public async Task AddSportLog(InfoRequest request, float caloriesBurned)
     {
         var sportLog = new SportLog
         {
             UserId = request.UserId,
             Description = request.Description,
+            CaloriesBurned = caloriesBurned,
             Date = DateTime.Today
         };
 
@@ -31,14 +32,15 @@ public class SportLogService(AppDbContext context) : ISportLogService
     public async Task DeleteSportLogForToday(InfoRequest request)
     {
         var sportLog = await context.SportLogs
-            .FirstOrDefaultAsync(s => s.Description == request.Description && s.Date.Date == DateTime.Today && s.UserId.Equals(request.UserId));
+            .Where(s => s.Description == request.Description && s.Date.Date == DateTime.Today && s.UserId.Equals(request.UserId))
+            .ToListAsync();
 
         if (sportLog == null)
         {
             throw new Exception($"No sport log found for '{request.Description}' on {DateTime.Today:yyyy-MM-dd} for userId {request.UserId}.");
         }
 
-        context.SportLogs.Remove(sportLog);
+        context.SportLogs.RemoveRange(sportLog);
         await context.SaveChangesAsync();
     }
 }

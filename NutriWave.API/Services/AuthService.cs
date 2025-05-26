@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NutriWave.API.Helpers;
 using NutriWave.API.Models.DTO;
 using NutriWave.API.Services.Interfaces;
+using System.Security.Claims;
 
 namespace NutriWave.API.Services;
 

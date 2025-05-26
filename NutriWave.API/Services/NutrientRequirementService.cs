@@ -1,4 +1,5 @@
-﻿using NutriWave.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Services.Interfaces;
 
@@ -69,4 +70,11 @@ public class NutrientRequirementService : INutrientRequirementService
         await _context.SaveChangesAsync();
     }
 
+    public Task<List<UserNutrientRequirement>> GetUserNutrientRequirements(int userId)
+    {
+        return _context.UserNutrientRequirements
+            .Where(r => r.UserId == userId)
+            .Include(r => r.Nutrient)
+            .ToListAsync();
+    }
 }

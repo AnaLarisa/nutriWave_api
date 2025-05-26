@@ -11,14 +11,15 @@ public class SportIntakeService(AppDbContext context, ISportLogService sportLogS
 {
     public async Task AddSportToUser(InfoRequest request)
     {
-        await sportLogService.AddSportLog(request);
-
         var apiResponse = await nutritionixClient.GetSportInfoAsync(request.Description);
         var sportUsefulData = apiResponse.Exercises.Select(exercise => new SportUsefulData { Name = exercise.Name, CaloriesBurned = (float)exercise.Calories }).ToList();
         await cacheService.SaveSportInfo(request, sportUsefulData);
 
+        var sportCaloriesSum = sportUsefulData.Sum(s => s.CaloriesBurned);
+        await sportLogService.AddSportLog(request, sportCaloriesSum);
+
         var caloriesIntake = await GetUserCaloriesIntakeForToday(request.UserId);
-        caloriesIntake.Quantity -= sportUsefulData.Sum(s => s.CaloriesBurned);
+        caloriesIntake.Quantity -= sportCaloriesSum;
 
         await context.SaveChangesAsync();
     }

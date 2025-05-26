@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NutriWave.API.Models.DTO;
 using NutriWave.API.Services.Interfaces;
+using System.Security.Claims;
 
 namespace NutriWave.API.Controllers;
 
@@ -12,11 +13,12 @@ public class SportController(ISportIntakeService sportIntakeService) : Controlle
 {
 
     [HttpPost("api/sport-intake")]
-    public async Task<IActionResult> UpdateFoodIntake([FromBody] InfoRequest request)
+    public async Task<IActionResult> UpdateSportIntake([FromBody] string description)
     {
         try
         {
-            await sportIntakeService.AddSportToUser(request);
+            var infoRequest = new InfoRequest() { Description = description, UserId = UserId() };
+            await sportIntakeService.AddSportToUser(infoRequest);
         }
         catch (Exception e)
         {
@@ -26,11 +28,12 @@ public class SportController(ISportIntakeService sportIntakeService) : Controlle
     }
 
     [HttpDelete("api/sport-intake")]
-    public async Task<IActionResult> RemoveFoodIntake([FromBody] InfoRequest request)
+    public async Task<IActionResult> RemoveSportIntake([FromBody] string description)
     {
         try
         {
-            await sportIntakeService.DeleteSport(request);
+            var infoRequest = new InfoRequest() { Description = description, UserId = UserId() };
+            await sportIntakeService.DeleteSport(infoRequest);
         }
         catch (Exception e)
         {
@@ -40,6 +43,8 @@ public class SportController(ISportIntakeService sportIntakeService) : Controlle
     }
 
 
-
-
+    private int UserId()
+    {
+        return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+    }
 }

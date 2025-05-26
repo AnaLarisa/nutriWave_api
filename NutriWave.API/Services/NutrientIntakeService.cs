@@ -25,11 +25,11 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         }
     }
 
-    public async Task<List<UserNutrientIntake>> GetNutrientIntakesForToday(int userId)
+    public async Task<List<UserNutrientIntake>> GetNutrientIntakesByDate(int userId, DateTime dateTime)
     {
         return await context.UserNutrientIntakes
             .Include(ni => ni.Nutrient)
-            .Where(ni => ni.UserId == userId && ni.Date.Date == DateTime.Today)
+            .Where(ni => ni.UserId == userId && ni.Date.Date == dateTime)
             .ToListAsync();
     }
 

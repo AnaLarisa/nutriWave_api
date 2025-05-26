@@ -30,7 +30,7 @@ public class AuthenticationController(IAuthService authService) : ControllerBase
         }
 
         var token = authService.GenerateJwtToken(user);
-        return Ok(new { token });
+        return Ok(token);
     }
 
 }
