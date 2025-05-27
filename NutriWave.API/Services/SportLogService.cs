@@ -3,6 +3,7 @@ using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 using NutriWave.API.Services.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NutriWave.API.Services;
 
@@ -22,13 +23,6 @@ public class SportLogService(AppDbContext context) : ISportLogService
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<SportLog>> GetSportLogs(int userId, DateTime date)
-    {
-        return await context.SportLogs
-            .Where(log => log.UserId == userId && log.Date.Date == date.Date)
-            .ToListAsync();
-    }
-
     public async Task DeleteSportLogForToday(InfoRequest request)
     {
         var sportLog = await context.SportLogs
@@ -42,5 +36,17 @@ public class SportLogService(AppDbContext context) : ISportLogService
 
         context.SportLogs.RemoveRange(sportLog);
         await context.SaveChangesAsync();
+    }
+
+    public async Task<IList<SportLogDto>> GetSportLogsByDate(int userId, DateTime dateTime)
+    {
+        return await context.SportLogs
+            .Where(log => log.UserId == userId && log.Date.Date == dateTime.Date)
+            .Select(log => new SportLogDto
+            {
+                Description = log.Description,
+                CaloriesBurned = log.CaloriesBurned,
+            })
+            .ToListAsync();
     }
 }

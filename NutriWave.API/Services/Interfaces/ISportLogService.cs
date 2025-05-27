@@ -6,6 +6,6 @@ namespace NutriWave.API.Services.Interfaces;
 public interface ISportLogService
 {
     Task AddSportLog(InfoRequest request, float calories);
-    Task<List<SportLog>> GetSportLogs(int userId, DateTime date);
     Task DeleteSportLogForToday(InfoRequest request);
+    Task<IList<SportLogDto>> GetSportLogsByDate(int userId, DateTime dateTime);
 }

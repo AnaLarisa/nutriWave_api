@@ -20,13 +20,6 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<FoodLog>> GetFoodIntakeLogs(int userId, DateTime date)
-    {
-        return await context.FoodLogs
-            .Where(log => log.UserId == userId && log.Date.Date == date.Date)
-            .ToListAsync();
-    }
-
     public async Task DeleteFoodIntakeLogForToday(InfoRequest foodRequest)
     {
         var foodLog = await context.FoodLogs
@@ -43,4 +36,11 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
         await context.SaveChangesAsync();
     }
 
+    public async Task<List<string>> GetFoodLogsByDate(int userId, DateTime dateTime)
+    {
+        return await context.FoodLogs
+            .Where(log => log.UserId == userId && log.Date.Date == dateTime.Date)
+            .Select(f => f.Description)
+            .ToListAsync();
+    }
 }

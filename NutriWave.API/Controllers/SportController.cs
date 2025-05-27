@@ -9,7 +9,7 @@ namespace NutriWave.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class SportController(ISportIntakeService sportIntakeService) : ControllerBase
+public class SportController(ISportIntakeService sportIntakeService, ISportLogService sportLogService) : ControllerBase
 {
 
     [HttpPost("api/sport-intake")]
@@ -40,6 +40,21 @@ public class SportController(ISportIntakeService sportIntakeService) : Controlle
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
+    }
+
+    [HttpGet("api/sport-logs")]
+    public async Task<IActionResult> GetSportLogs(DateTime dateTime)
+    {
+        try
+        {
+            var userId = UserId();
+            var sportLogs = await sportLogService.GetSportLogsByDate(userId, dateTime);
+            return Ok(sportLogs);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
 

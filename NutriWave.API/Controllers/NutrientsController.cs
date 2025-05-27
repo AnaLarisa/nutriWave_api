@@ -10,10 +10,10 @@ namespace NutriWave.API.Controllers;
 [ApiController]
 [Route("[controller]")]
 [Authorize]
-public class NutrientsController(INutrientIntakeService nutrientIntakeService, INutrientRequirementService nutrientRequirementService, I) : ControllerBase
+public class NutrientsController(INutrientIntakeService nutrientIntakeService, INutrientRequirementService nutrientRequirementService, IFoodLogService foodLogService) : ControllerBase
 {
 
-    [HttpGet("api/allNutrition")]
+    [HttpGet("allNutrition")]
     public async Task<IActionResult> GetAllNutrition(DateTime dateTime)
     {
         try
@@ -32,7 +32,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
     }
 
 
-    [HttpPost("api/food-intake")]
+    [HttpPost("food-intake")]
     public async Task<IActionResult> UpdateFoodIntake([FromBody] string description)
     {
         try
@@ -47,7 +47,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
     }
 
-    [HttpDelete("api/food-intake")]
+    [HttpDelete("food-intake")]
     public async Task<IActionResult> RemoveFoodIntake([FromBody] string description)
     {
         try
@@ -60,6 +60,21 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
         return StatusCode(StatusCodes.Status200OK, "The daily nutrients have been updated!");
+    }
+
+    [HttpGet("food-logs")]
+    public async Task<IActionResult> GetFoodLogs(DateTime dateTime)
+    {
+        try
+        {
+            var userId = UserId();
+            var foodLogs = await foodLogService.GetFoodLogsByDate(userId, dateTime);
+            return Ok(foodLogs);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
     }
 
     private int UserId()
