@@ -12,6 +12,8 @@ public static class EnvironmentHelper
 
     public static string RedisConnectionString => GetVariable("REDIS_CONNECTION_STRING");
 
+    public static string AnthropicApiKey => GetVariable("ANTHROPIC_API_KEY");
+
 
     private static string GetVariable(string name)
     {

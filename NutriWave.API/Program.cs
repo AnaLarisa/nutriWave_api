@@ -16,14 +16,17 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(EnvironmentHelper.DbConnectionString));
 
-
 builder.Services.AddHttpClient<INutritionixClient, NutritionixClient>(client =>
 {
     client.BaseAddress = new Uri(EnvironmentHelper.NutritionixApiUrl);
     client.DefaultRequestHeaders.Add("Accept", "application/json");
-    client.DefaultRequestHeaders.Add("x-app-id", EnvironmentHelper.NutritionixAppId );
+    client.DefaultRequestHeaders.Add("x-app-id", EnvironmentHelper.NutritionixAppId);
     client.DefaultRequestHeaders.Add("x-app-key", EnvironmentHelper.NutritionixApiKey);
 });
+
+builder.Services.AddHttpClient<IMedicalPdfService, MedicalPdfService>();
+builder.Services.AddScoped<IMedicalPdfService, MedicalPdfService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICacheService, CacheService>();
 builder.Services.AddScoped<INutrientRequirementService, NutrientRequirementService>();
@@ -120,7 +123,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DbInitializer.SeedDatabase(context); // seed the database with nutrients data
+    DbInitializer.SeedDatabase(context);
 }
 
 app.Run();
