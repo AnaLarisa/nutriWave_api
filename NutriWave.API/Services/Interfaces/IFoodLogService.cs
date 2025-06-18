@@ -6,5 +6,5 @@ public interface IFoodLogService
 {
     Task AddFoodIntakeRequestLog(InfoRequest foodRequest);
     Task DeleteFoodIntakeLogForToday(InfoRequest foodRequest);
-    Task<List<string>> GetFoodLogsByDate(int userId, DateTime dateTime);
+    Task<List<FoodLog>> GetFoodLogsByDate(int userId, DateTime startDate, DateTime? endDate = null);
 }

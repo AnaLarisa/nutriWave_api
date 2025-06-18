@@ -26,6 +26,7 @@ builder.Services.AddHttpClient<INutritionixClient, NutritionixClient>(client =>
 
 builder.Services.AddHttpClient<IMedicalPdfService, MedicalPdfService>();
 builder.Services.AddScoped<IMedicalPdfService, MedicalPdfService>();
+builder.Services.AddScoped<IReportGeneratorService, ReportGeneratorService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ICacheService, CacheService>();

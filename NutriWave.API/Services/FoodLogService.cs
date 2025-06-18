@@ -2,8 +2,9 @@
 using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
+using NutriWave.API.Services.Interfaces;
 
-namespace NutriWave.API.Services.Interfaces;
+namespace NutriWave.API.Services;
 
 public class FoodLogService(AppDbContext context) : IFoodLogService
 {
@@ -36,11 +37,19 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
         await context.SaveChangesAsync();
     }
 
-    public async Task<List<string>> GetFoodLogsByDate(int userId, DateTime dateTime)
+    public async Task<List<FoodLog>> GetFoodLogsByDate(int userId, DateTime startDate, DateTime? endDate = null)
     {
+        if (endDate == null)
+        {
+            return await context.FoodLogs
+                .Where(log => log.UserId == userId && log.Date.Date == startDate.Date)
+                .ToListAsync();
+        }
+
         return await context.FoodLogs
-            .Where(log => log.UserId == userId && log.Date.Date == dateTime.Date)
-            .Select(f => f.Description)
+            .Where(log => log.UserId == userId && log.Date.Date >= startDate.Date && log.Date.Date <= endDate.Value.Date)
+            .OrderBy(log => log.Date)
+            .ThenBy(log => log.Description)
             .ToListAsync();
     }
 }

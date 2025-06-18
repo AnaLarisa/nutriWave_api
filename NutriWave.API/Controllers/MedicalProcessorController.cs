@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NutriWave.API.Services;
 using NutriWave.API.Services.Interfaces;
 
 namespace NutriWave.API.Controllers;

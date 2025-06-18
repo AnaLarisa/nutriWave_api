@@ -3,7 +3,6 @@ using NutriWave.API.Data;
 using NutriWave.API.Models;
 using NutriWave.API.Models.DTO;
 using NutriWave.API.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NutriWave.API.Services;
 

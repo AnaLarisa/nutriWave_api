@@ -25,11 +25,21 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         }
     }
 
-    public async Task<List<UserNutrientIntake>> GetNutrientIntakesByDate(int userId, DateTime dateTime)
+    public async Task<List<UserNutrientIntake>> GetNutrientIntakesByDate(int userId, DateTime startDate, DateTime? endDate = null)
     {
+        if (endDate == null)
+        {
+            return await context.UserNutrientIntakes
+                .Include(ni => ni.Nutrient)
+                .Where(ni => ni.UserId == userId && ni.Date.Date == startDate)
+                .ToListAsync();
+        }
+
         return await context.UserNutrientIntakes
             .Include(ni => ni.Nutrient)
-            .Where(ni => ni.UserId == userId && ni.Date.Date == dateTime)
+            .Where(ni => ni.UserId == userId && ni.Date.Date >= startDate && ni.Date.Date <= endDate)
+            .OrderBy(ni => ni.Date)
+            .ThenBy(ni => ni.Nutrient.Name)
             .ToListAsync();
     }
 

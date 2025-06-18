@@ -54,15 +54,15 @@ public class MedicalPdfService : IMedicalPdfService
         {
             Console.WriteLine($"Processing PDF: {filename}");
 
-            // Step 1: Convert PDF to images
+            //Convert PDF to images
             var imageFiles = await ConvertPdfToImagesAsync(pdfBytes, filename);
             tempFiles.AddRange(imageFiles);
 
-            // Step 2: Anonymize images - STOP if anonymization fails for supported providers
+            //Anonymize images - STOP if anonymization fails for supported providers
             var (finalImages, anonymizedFiles) = await AnonymizeImagesAsync(imageFiles);
             tempFiles.AddRange(anonymizedFiles);
 
-            // Step 3: Extract data from images
+            //Extract data from images
             var allResults = new List<TestResult>();
             foreach (var imagePath in finalImages)
             {
@@ -71,20 +71,18 @@ public class MedicalPdfService : IMedicalPdfService
                 Console.WriteLine($"[OK] Extracted {imageResults.Count} tests from {Path.GetFileName(imagePath)}");
             }
 
-            // Step 4: Post-process data
             if (allResults.Any())
             {
                 allResults = await PostProcessDataAsync(allResults);
             }
 
-            // Step 5: Update abnormal values for nutrient recommendations
+            // Update abnormal values for nutrients
             List<object> nutrientRecommendations = new();
             if (allResults.Any())
             {
                 nutrientRecommendations = await AnalyzeAbnormalValuesAsync(allResults);
                 await UpdateDbNutrientIntake(nutrientRecommendations);
             }
-
 
             result.TestResults = allResults;
             result.NutrientRecommendations = nutrientRecommendations;

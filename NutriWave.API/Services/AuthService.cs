@@ -9,7 +9,6 @@ using Microsoft.IdentityModel.Tokens;
 using NutriWave.API.Helpers;
 using NutriWave.API.Models.DTO;
 using NutriWave.API.Services.Interfaces;
-using System.Security.Claims;
 
 namespace NutriWave.API.Services;
 
@@ -42,6 +41,19 @@ public class AuthService(
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
+    }
+
+    public async Task<UserInfoDto> GetUserInformationById(int userId)
+    {
+        return await context.Users
+            .Where(u => u.UserId == userId)
+            .Select(u => new UserInfoDto
+            {
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                BirthDate = u.BirthDate
+            }).FirstAsync();
     }
 
     public async Task<bool> UserExistsAsync(string email)

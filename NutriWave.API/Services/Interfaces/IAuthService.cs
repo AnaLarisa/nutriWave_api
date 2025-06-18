@@ -9,5 +9,6 @@ public interface IAuthService
     Task CreateUserAsync(RegisterRequest request);
     Task<UserInformation?> AuthenticateUserAsync(string email, string password);
     string GenerateJwtToken(UserInformation user);
+    Task<UserInfoDto> GetUserInformationById(int userId);
 }
 

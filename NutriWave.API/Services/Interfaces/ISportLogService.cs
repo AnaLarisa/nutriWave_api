@@ -1,5 +1,4 @@
-﻿using NutriWave.API.Models;
-using NutriWave.API.Models.DTO;
+﻿using NutriWave.API.Models.DTO;
 
 namespace NutriWave.API.Services.Interfaces;
 

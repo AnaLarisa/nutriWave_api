@@ -69,7 +69,8 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
         {
             var userId = UserId();
             var foodLogs = await foodLogService.GetFoodLogsByDate(userId, dateTime);
-            return Ok(foodLogs);
+
+            return Ok(foodLogs.Select(f => f.Description));
         }
         catch (Exception e)
         {
