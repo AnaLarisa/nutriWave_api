@@ -8,5 +8,6 @@ public interface INutrientIntakeService
     Task AddNewNutrientIntakeForTodayIfNotPresent(int userId);
     Task<List<UserNutrientIntake>> GetNutrientIntakesByDate(int userId, DateTime startDate, DateTime? endDate = null);
     Task UpdateNutrientIntakeAfterFood(InfoRequest request);
+    Task<string> UpdateNutrientIntakeAfterBarcode(InfoRequest request);
     Task RemoveFoodIntake(InfoRequest request);
 }

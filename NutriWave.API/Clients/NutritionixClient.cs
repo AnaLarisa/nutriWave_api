@@ -31,21 +31,19 @@ public class NutritionixClient(HttpClient httpClient) : INutritionixClient
 
         return result;
     }
-
-    public async Task<NutritionixResponse> GetBarcodeInfo(string barcodeId)
+    public async Task<NutritionixResponse?> GetBarcodeInfo(string barcodeId)
     {
-        var requestUri = new Uri(httpClient.BaseAddress!, Constants.NutritionixBarcodeInfoApiEndpoint);
+        var requestUri = new Uri(httpClient.BaseAddress!, $"{Constants.NutritionixBarcodeInfoApiEndpoint}?upc={barcodeId}");
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-
+        
         var response = await httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();
-
+        
         var result = await response.Content.ReadFromJsonAsync<NutritionixResponse>();
         if (result is { Foods.Count: > 0 })
         {
             ApiMappingHelper.ReplaceAttrIdsWithDbIds(result);
         }
-
         return result;
     }
 

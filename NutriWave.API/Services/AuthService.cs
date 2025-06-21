@@ -26,11 +26,10 @@ public class AuthService(
 
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
+            Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
-            }),
+            ]),
             Expires = DateTime.UtcNow.AddMinutes(double.Parse(configuration["JwtSettings:ExpiryMinutes"])),
             Issuer = configuration["JwtSettings:Issuer"],
             Audience = configuration["JwtSettings:Audience"],

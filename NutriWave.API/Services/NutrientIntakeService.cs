@@ -77,6 +77,42 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         await context.SaveChangesAsync();
     }
 
+    public async Task<string> UpdateNutrientIntakeAfterBarcode(InfoRequest request)
+    {
+        var response = await nutritionixClient.GetBarcodeInfo(request.Description);
+        if (response == null || response.Foods.Count == 0)
+        {
+            throw new Exception($"No food information found for barcode {request.Description}.");
+        }
+
+        var totalNutrientValues = new Dictionary<int, float>();
+
+        foreach (var nutrient in response.Foods.SelectMany(food => food.FullNutrients))
+        {
+            if (totalNutrientValues.ContainsKey(nutrient.AttrId))
+                totalNutrientValues[nutrient.AttrId] += nutrient.Value;
+            else
+                totalNutrientValues[nutrient.AttrId] = nutrient.Value;
+        }
+
+        await cacheService.SaveFoodNutrients(request, totalNutrientValues);
+        await foodLogService.AddFoodIntakeRequestLog(request);
+
+        var userIntakes = await GetUserIntakeForTodayToDictionaryAsync(request);
+
+        foreach (var (nutrientId, addedQuantity) in totalNutrientValues)
+        {
+            if (userIntakes.TryGetValue(nutrientId, out var intake))
+            {
+                intake.Quantity += addedQuantity;
+            }
+        }
+
+        await context.SaveChangesAsync();
+
+        return response.Foods.FirstOrDefault()?.FoodName ?? request.Description;
+    }
+
     public async Task RemoveFoodIntake(InfoRequest request)
     {
         var userIntakes = await GetUserIntakeForTodayToDictionaryAsync(request);
