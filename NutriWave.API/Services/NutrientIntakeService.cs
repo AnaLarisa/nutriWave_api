@@ -50,6 +50,8 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         {
             throw new Exception($"No food information found for {request.Description}.");
         }
+
+        request.DisplayName = request.Description;
         
         var totalNutrientValues = new Dictionary<int, float>();
 
@@ -82,8 +84,14 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
         var response = await nutritionixClient.GetBarcodeInfo(request.Description);
         if (response == null || response.Foods.Count == 0)
         {
-            throw new Exception($"No food information found for barcode {request.Description}.");
+            throw new ArgumentException($"No food information found for barcode {request.Description}.");
         }
+
+        var food = response.Foods.First();
+        var foodDisplayName = !string.IsNullOrEmpty(food.BrandName)
+            ? $"{food.BrandName} {food.FoodName}"
+            : food.FoodName;
+        request.DisplayName = foodDisplayName;
 
         var totalNutrientValues = new Dictionary<int, float>();
 
@@ -95,6 +103,7 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
                 totalNutrientValues[nutrient.AttrId] = nutrient.Value;
         }
 
+        
         await cacheService.SaveFoodNutrients(request, totalNutrientValues);
         await foodLogService.AddFoodIntakeRequestLog(request);
 
@@ -110,7 +119,7 @@ public class NutrientIntakeService(AppDbContext context, ICacheService cacheServ
 
         await context.SaveChangesAsync();
 
-        return response.Foods.FirstOrDefault()?.FoodName ?? request.Description;
+        return foodDisplayName;
     }
 
     public async Task RemoveFoodIntake(InfoRequest request)

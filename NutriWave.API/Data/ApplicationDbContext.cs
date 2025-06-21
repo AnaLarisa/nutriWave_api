@@ -94,6 +94,7 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(f => f.Id);
             entity.Property(f => f.Description).IsRequired().HasMaxLength(500);
+            entity.Property(f => f.DisplayName).IsRequired().HasMaxLength(500);
             entity.Property(f => f.Date).IsRequired();
 
             entity.HasOne(f => f.User)

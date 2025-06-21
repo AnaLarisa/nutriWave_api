@@ -14,6 +14,7 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
         {
             UserId = foodRequest.UserId,
             Description = foodRequest.Description,
+            DisplayName = foodRequest.DisplayName,
             Date = DateTime.Today
         };
 
@@ -25,7 +26,7 @@ public class FoodLogService(AppDbContext context) : IFoodLogService
     {
         var foodLog = await context.FoodLogs
             .FirstOrDefaultAsync(f =>
-                f.Description == foodRequest.Description &&
+                f.DisplayName == foodRequest.Description &&
                 f.Date.Date == DateTime.Today &&
                 f.UserId == foodRequest.UserId);
         if (foodLog == null)

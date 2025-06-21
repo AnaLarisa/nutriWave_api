@@ -14,6 +14,9 @@ public class FoodLog
     public required string Description { get; set; }
 
     [Required]
+    public string DisplayName { get; set; }
+
+    [Required]
     public DateTime Date { get; set; }
 
     public UserInformation User { get; set; } = null!;

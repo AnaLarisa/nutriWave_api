@@ -35,16 +35,34 @@ public class NutritionixClient(HttpClient httpClient) : INutritionixClient
     {
         var requestUri = new Uri(httpClient.BaseAddress!, $"{Constants.NutritionixBarcodeInfoApiEndpoint}?upc={barcodeId}");
         var request = new HttpRequestMessage(HttpMethod.Get, requestUri);
-        
-        var response = await httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        
-        var result = await response.Content.ReadFromJsonAsync<NutritionixResponse>();
-        if (result is { Foods.Count: > 0 })
+
+        try
         {
-            ApiMappingHelper.ReplaceAttrIdsWithDbIds(result);
+            var response = await httpClient.SendAsync(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var result = await response.Content.ReadFromJsonAsync<NutritionixResponse>();
+                if (result is { Foods.Count: > 0 })
+                {
+                    ApiMappingHelper.ReplaceAttrIdsWithDbIds(result);
+                }
+                return result;
+            }
+
+            response.EnsureSuccessStatusCode();
+            return null;
         }
-        return result;
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine($"HTTP request failed: {ex.Message}");
+            return null;
+        }
     }
 
     public async Task<ExerciseResponse?> GetSportInfoAsync(string sport)

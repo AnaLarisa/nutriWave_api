@@ -50,17 +50,20 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
     [HttpPost("barcode-intake")]
     public async Task<IActionResult> UpdateBarcodeIntake([FromBody] string barcode)
     {
-        var foodName = barcode;
         try
         {
             var infoRequest = new InfoRequest() { Description = barcode, UserId = UserId() };
-            foodName = await nutrientIntakeService.UpdateNutrientIntakeAfterBarcode(infoRequest);
+            var foodName = await nutrientIntakeService.UpdateNutrientIntakeAfterBarcode(infoRequest);
+            return Ok(new { message = "The daily nutrients have been updated!", foodName });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
-        return StatusCode(StatusCodes.Status200OK, $"The daily nutrients have been updated for item {foodName}!");
     }
 
     [HttpDelete("food-intake")]
@@ -86,7 +89,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
             var userId = UserId();
             var foodLogs = await foodLogService.GetFoodLogsByDate(userId, dateTime);
 
-            return Ok(foodLogs.Select(f => f.Description));
+            return Ok(foodLogs.Select(f => f.DisplayName));
         }
         catch (Exception e)
         {
