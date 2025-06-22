@@ -79,9 +79,6 @@ public class NutritionixFood
     [JsonPropertyName("source")]
     public int? Source { get; set; }
 
-    [JsonPropertyName("ndb_no")]
-    public string? NdbNo { get; set; }
-
     [JsonPropertyName("lat")]
     public float? Lat { get; set; }
 
