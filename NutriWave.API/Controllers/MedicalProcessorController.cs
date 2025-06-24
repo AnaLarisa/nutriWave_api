@@ -1,21 +1,18 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NutriWave.API.Services.Interfaces;
+using System.Security.Claims;
 
 namespace NutriWave.API.Controllers;
 
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class MedicalProcessorController : ControllerBase
+public class MedicalProcessorController(
+    IMedicalPdfService service,
+    INutrientRequirementService nutrientRequirementService)
+    : ControllerBase
 {
-    private readonly IMedicalPdfService _service;
-
-    public MedicalProcessorController(IMedicalPdfService service)
-    {
-        _service = service;
-    }
-
     [HttpPost("process-pdf")]
     public async Task<IActionResult> ProcessPdf(IFormFile pdfFile)
     {
@@ -35,7 +32,7 @@ public class MedicalProcessorController : ControllerBase
             await pdfFile.CopyToAsync(memoryStream);
             var pdfBytes = memoryStream.ToArray();
 
-            var result = await _service.ProcessPdfAsync(pdfBytes, pdfFile.FileName);
+            var result = await service.ProcessPdfAsync(pdfBytes, pdfFile.FileName, UserId());
 
             if (result.Success)
             {
@@ -50,5 +47,25 @@ public class MedicalProcessorController : ControllerBase
         {
             return StatusCode(500, new { error = ex.Message });
         }
+    }
+
+    [HttpPost("restore-to-default")]
+    public async Task<IActionResult> RestoreToDefault()
+    {
+        try
+        {
+            await nutrientRequirementService.RestoreAllNutrientRequirementsToDefault(UserId());
+            return Ok(new { message = "Nutrient requirements restored to default." });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+
+    private int UserId()
+    {
+        return int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
     }
 }

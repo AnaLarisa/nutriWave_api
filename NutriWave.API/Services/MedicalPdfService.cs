@@ -15,11 +15,13 @@ public class MedicalPdfService : IMedicalPdfService
     private readonly HttpClient _httpClient;
     private readonly string _anthropicApiKey;
     private readonly string _tessDataPath;
+    private readonly INutrientRequirementService _nutrientRequirementService;
 
-    public MedicalPdfService(HttpClient httpClient)
+    public MedicalPdfService(HttpClient httpClient, INutrientRequirementService nutrientRequirementService)
     {
         _httpClient = httpClient;
         _anthropicApiKey = EnvironmentHelper.AnthropicApiKey;
+        _nutrientRequirementService = nutrientRequirementService;
 
         // Fix the tessdata path - it should point to the copied tessdata in output directory
         _tessDataPath = Path.Combine(AppContext.BaseDirectory, "tessdata");
@@ -45,7 +47,7 @@ public class MedicalPdfService : IMedicalPdfService
         }
     }
 
-    public async Task<ProcessingResult> ProcessPdfAsync(byte[] pdfBytes, string filename)
+    public async Task<ProcessingResult> ProcessPdfAsync(byte[] pdfBytes, string filename, int userId)
     {
         var result = new ProcessingResult();
         var tempFiles = new List<string>();
@@ -81,7 +83,7 @@ public class MedicalPdfService : IMedicalPdfService
             if (allResults.Any())
             {
                 nutrientRecommendations = await AnalyzeAbnormalValuesAsync(allResults);
-                await UpdateDbNutrientIntake(nutrientRecommendations);
+                await UpdateDbNutrientIntake(nutrientRecommendations, userId);
             }
 
             result.TestResults = allResults;
@@ -110,15 +112,16 @@ public class MedicalPdfService : IMedicalPdfService
         }
         finally
         {
-            // Cleanup temporary files
             await CleanupTempFilesAsync(tempFiles);
         }
 
         return result;
     }
 
-    private async Task UpdateDbNutrientIntake(List<object> nutrientRecommendations)
+    private async Task UpdateDbNutrientIntake(List<object> nutrientRecommendations, int userId)
     {
+        var nutrientChanges = NutrientChangeHelper.ParseFromObjectList(nutrientRecommendations);
+        await _nutrientRequirementService.UpdateNutrientRequirementForUserInBulk(userId, nutrientChanges);// add try-catch here if needed
     }
 
     private async Task<List<string>> ConvertPdfToImagesAsync(byte[] pdfBytes, string filename)

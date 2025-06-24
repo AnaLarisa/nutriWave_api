@@ -71,7 +71,7 @@ public class NutrientsController(INutrientIntakeService nutrientIntakeService, I
     {
         try
         {
-            var infoRequest = new InfoRequest() { Description = description, UserId = UserId() };
+            var infoRequest = new InfoRequest() { Description = description, DisplayName = description, UserId = UserId() };
             await nutrientIntakeService.RemoveFoodIntake(infoRequest);
         }
         catch (Exception e)

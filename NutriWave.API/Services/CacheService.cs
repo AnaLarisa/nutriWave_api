@@ -58,7 +58,7 @@ public class CacheService(IDistributedCache cache) : ICacheService
 
     private static string GetNutritionCacheKey(InfoRequest request)
     {
-        return $"Nutrients_{request.UserId}_{request.Description}_{DateTime.Today:yyyyMMdd}";
+        return $"Nutrients_{request.UserId}_{request.DisplayName}_{DateTime.Today:yyyyMMdd}";
     }
 
     private static string GetSportCacheKey(InfoRequest request)

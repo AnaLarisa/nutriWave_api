@@ -122,7 +122,7 @@ public class ReportGeneratorService(IAuthService authService) : IReportGenerator
         csv.AppendLine("Date,Time,Description");
         foreach (var log in foodLogs)
         {
-            csv.AppendLine($"{log.Date:yyyy-MM-dd},{log.Date:HH:mm},{EscapeCsvField(log.Description)}");
+            csv.AppendLine($"{log.Date:yyyy-MM-dd},{log.Date:HH:mm},{EscapeCsvField(log.DisplayName)}");
         }
         return csv.ToString();
     }
