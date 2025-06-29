@@ -139,37 +139,29 @@ public class ReportGeneratorService(IAuthService authService) : IReportGenerator
         string FormatDateTime(DateTime dt) => dt.ToString("yyyyMMddHHmmss");
 
         var hl7 = new StringBuilder();
-        string msgTime = FormatDateTime(DateTime.UtcNow);
-        string msgId = $"NUT-{userId}-{msgTime}";
+        var msgTime = FormatDateTime(DateTime.UtcNow);
+        var msgId = $"NUT-{userId}-{msgTime}";
 
-        // MSH – Message Header
-        hl7.AppendLine($"MSH|^~\\&|NutritionApp|NutritionFac|ReceivingApp|ReceivingFac|{msgTime}||ORU^R01|{msgId}|P|2.5");
+        
+        hl7.AppendLine($"MSH|^~\\&|NutritionApp|NutritionFac|ReceivingApp|ReceivingFac|{msgTime}||ORU^R01|{msgId}|P|2.5");// MSH – Message Header
+        hl7.AppendLine($"PID|1||{Escape(userId.ToString())}||{Escape(lastName)}^{Escape(firstName)}||");                // PID – Patient Identification
+        hl7.AppendLine("ORC|RE|1");                                                                                       // ORC – Order Control
+        hl7.AppendLine($"OBR|1|||Nutrition Report|||{FormatDateTime(startDate)}|||{FormatDateTime(endDate)}");            // OBR – Observation Request
 
-        // PID – Patient Identification
-        hl7.AppendLine($"PID|1||{Escape(userId.ToString())}||{Escape(lastName)}^{Escape(firstName)}||");
+        var obxSeq = 1;
 
-        // ORC – Order Control
-        hl7.AppendLine("ORC|RE|1");
-
-        // OBR – Observation Request
-        hl7.AppendLine($"OBR|1|||Nutrition Report|||{FormatDateTime(startDate)}|||{FormatDateTime(endDate)}");
-
-        int obxSeq = 1;
-
-        // OBX – Nutrient intake observations
-        foreach (var intake in nutrientIntakes)
+        foreach (var intake in nutrientIntakes)                                                                           // OBX – Nutrient intake observations
         {
-            string value = intake.Quantity.ToString("0.##", CultureInfo.InvariantCulture);
-            string date = FormatDateTime(intake.Date);
+            var value = intake.Quantity.ToString("0.##", CultureInfo.InvariantCulture);
+            var date = FormatDateTime(intake.Date);
 
             hl7.AppendLine($"OBX|{obxSeq++}|NM|{Escape(intake.Nutrient.Name)}^Nutrient Intake||{value}|{Escape(intake.Nutrient.Unit)}|^|F|||{date}");
         }
 
-        // OBX – Food logs
-        foreach (var log in foodLogs)
+        foreach (var log in foodLogs)                                                                                     // OBX – Food logs
         {
-            string text = Escape(log.Description);
-            string date = FormatDateTime(log.Date);
+            var text = Escape(log.Description);
+            var date = FormatDateTime(log.Date);
 
             hl7.AppendLine($"OBX|{obxSeq++}|TX|FOODLOG^Food Intake Log||{text}|||^|F|||{date}");
         }
